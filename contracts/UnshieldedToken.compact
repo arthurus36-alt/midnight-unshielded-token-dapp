@@ -1,0 +1,16 @@
+export contract UnshieldedToken {
+  export state balances: Map<PublicKey, Uint<64>>;
+  export state total_supply: Uint<64>;
+
+  export circuit mint(to: PublicKey, amount: Uint<64>): void {
+    balances.set(to, balances.get(to) + amount);
+    total_supply.set(total_supply.get() + amount);
+  }
+
+  export circuit transfer(to: PublicKey, amount: Uint<64>): void {
+    let sender = ownPublicKey();
+    assert(balances.get(sender) >= amount);
+    balances.set(sender, balances.get(sender) - amount);
+    balances.set(to, balances.get(to) + amount);
+  }
+}
